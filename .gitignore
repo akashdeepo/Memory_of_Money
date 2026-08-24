@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+# vendor data, not redistributable (see data/README.md)
+data/cta/
+data/*.parquet
+data/*.csv
+!data/SignalDoc.csv
+# generated
+fig/
+*.pkl
+*.npy

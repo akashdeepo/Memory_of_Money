@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: >-
+  Replication package for "The Memory of Money: Track-Record Windows and
+  Whether Crowding Cycles"
+message: >-
+  If you use this software, please cite both the software (via the Zenodo DOI
+  below) and the paper it accompanies.
+type: software
+authors:
+  - family-names: Deep
+    given-names: Akash
+    # orcid: 'https://orcid.org/0000-0000-0000-0000'   # EDIT: add your ORCID
+repository-code: 'https://github.com/akashdeepo/memory-of-money'   # EDIT if renamed
+license: MIT
+version: 1.0.0
+# doi: '10.5281/zenodo.XXXXXXX'   # EDIT: add after the first Zenodo release
