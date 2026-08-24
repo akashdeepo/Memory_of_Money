@@ -9,7 +9,8 @@ type: software
 authors:
   - family-names: Deep
     given-names: Akash
-    # orcid: 'https://orcid.org/0000-0000-0000-0000'   # EDIT: add your ORCID
+    orcid: 'https://orcid.org/0000-0001-9126-7509'
+    affiliation: Texas Tech University
 repository-code: 'https://github.com/akashdeepo/Memory_of_Money'
 license: MIT
 version: 1.0.0
