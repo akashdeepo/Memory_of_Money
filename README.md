@@ -2,6 +2,7 @@
 
 **Track-record windows and whether crowding cycles.**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22077602.svg)](https://doi.org/10.5281/zenodo.22077602)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Code style: reproducible](https://img.shields.io/badge/results-seeded%20%26%20reproducible-brightgreen.svg)](#reproducibility)
@@ -166,9 +167,14 @@ Python 3.13.3 was used for the published results; any Python ≥ 3.11 should wor
 
 ## Citing
 
-If you use this code, please cite the software via the archived release (see
-[`CITATION.cff`](CITATION.cff)) and the paper it accompanies. The paper is a working paper
-under review; the citation here will be updated when it appears.
+If you use this code, please cite the archived release:
+
+> Deep, A. (2026). *"The Memory of Money: Track-Record Windows and Whether Crowding
+> Cycles" — Replication Package* (v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.22077602
+
+A BibTeX entry and machine-readable metadata are in [`CITATION.cff`](CITATION.cff); GitHub
+renders a "Cite this repository" button from it. Please also cite the paper itself, which
+is a working paper under review; that citation will be added here when it appears.
 
 ---
 
