@@ -1,119 +1,178 @@
-# The Memory of Money: Track-Record Windows and Whether Crowding Cycles
+# The Memory of Money
 
-Replication package for the paper of that name (Akash Deep). Every number, table and
-figure in the paper is produced by the scripts in `code/`; nothing is hand-computed.
+**Track-record windows and whether crowding cycles.**
 
-> **Status.** The manuscript is under review. This repository is archived on Zenodo;
-> cite the DOI in `CITATION.cff` rather than the moving `main` branch.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
+[![Code style: reproducible](https://img.shields.io/badge/results-seeded%20%26%20reproducible-brightgreen.svg)](#reproducibility)
 
+Replication package for a working paper by **Akash Deep**. Every number, table and figure
+in the paper is produced by the scripts in [`code/`](code); nothing is hand-computed.
 
 ---
 
-## 1. Environment
+## What the paper is about
 
-Python 3.13.3 was used for the results in the paper. Any Python ≥ 3.11 should work.
+Capital chases a track record. The track record is a weighted history of past returns, and
+the weights are set by evaluation conventions: a trailing three-year Sharpe ratio, a star
+rating, a consultant's screen. Capital that arrives erodes the very edge it chased. That is
+a feedback loop with a lag, and lagged feedback loops either settle or oscillate.
+
+The paper's result is that **which one happens is decided by the *shape* of the memory, not
+by its length or by how aggressively capital chases.**
+
+![The loop and the two kernel classes](figures/Figure-01-loop-and-kernels.png)
+
+Memory that weights the freshest data most heavily — exponential discounting — can never
+sustain a cycle, at any gain. Memory that discounts the recent past relative to older data
+— a trailing window, or a window reached only after a reporting delay — cycles once a
+single dimensionless gain crosses a threshold the kernel itself sets. The period at onset
+is two to four times the window.
+
+The rest of the paper measures the two things that theorem says matter. Read as estimates
+of a memory kernel, the fund-flow literature says retail money has the safe shape and
+institutional money has the dangerous one, and the dangerous share has been growing. On
+managed futures — the one strategy whose capital is publicly recorded — the estimated
+kernel peaks at three years, and the loop gain is 0.18, an order of magnitude below
+threshold.
+
+---
+
+## Quickstart
+
+The theoretical results need no data at all. Clone and run:
 
 ```bash
+git clone https://github.com/akashdeepo/Memory_of_Money.git
+cd Memory_of_Money
+
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+
+python code/e001e_boxlag_thresholds.py   # reproduces the stability thresholds
+python code/e001_decay.py                # verifies them by simulation, writes figures
 ```
 
-Exact package versions used for the published results are pinned in
-`requirements-frozen.txt`. The looser `requirements.txt` is sufficient to reproduce the
-results to plotting precision.
+The first finishes in about a second and prints the threshold table two independent ways.
+The second integrates the delay equations and locates each bifurcation by bisection; it
+takes a few minutes and writes its figures to `fig/`.
 
-## 2. Data
+Everything under [Theory](#theory) below runs the same way, with no data. The empirical
+scripts additionally need the files described under [Data](#data).
 
-One of the five data sources is freely redistributable and is included in `data/`. The
-rest must be obtained from their providers before the corresponding scripts will run;
-their licences do not permit redistribution here. See `data/README.md` for the exact
-retrieval steps and the expected file layouts.
+---
 
-| Source | Used by | Included? | How to obtain |
-|---|---|---|---|
-| Open Source Asset Pricing, release 2025.10: `SignalDoc` | `e004*` | yes | included |
-| Open Source Asset Pricing: `PredictorPortsFull`, `PlaceboPortsFull` | `e004*` | no | `pip install openassetpricing`; see `data/README.md` |
-| BarclayHedge CTA industry and systematic-trader assets under management | `e005b`, `e005c` | no | barclayhedge.com |
-| BarclayHedge BTOP50 index, monthly | `e005b`, `e005c` | no | barclayhedge.com |
-| AQR Time Series Momentum Factors, monthly | `e005b`, `e005c` | no | AQR Data Library |
-| Global Factor Data; Kenneth French library | Section 7 test (not yet run) | no | see paper, Appendix C |
+## Repository layout
 
-The theory scripts (`e001*`, `e002*`, `e003*`, `e005_power`, `fig_loop_schematic`) need
-no data at all and reproduce Table 1, Table 5 and Figures 1--5, 7 and 8 out of the box.
+```
+code/         analysis and simulation scripts (see the tables below)
+data/         SignalDoc.csv; instructions for obtaining everything else
+figures/      the ten figures as they appear in the paper, 600 dpi
+requirements.txt            minimum versions
+requirements-frozen.txt     exact versions used for the published results
+```
 
-## 3. What produces what
+---
 
-Run any script from the repository root, e.g. `python code/e001_decay.py`. Scripts are
-independent of one another except where a dependency is noted.
+## What produces what
 
-### Theory (Sections 3, and Appendices A and B)
+### Theory
 
-| Paper object | Script | Notes |
+Runs with no data.
+
+| Paper object | Script |
+|---|---|
+| Stability thresholds, window-plus-lag rows | `e001e_boxlag_thresholds.py` |
+| Stability thresholds, closed-form rows; numerical verification | `e001_decay.py` |
+| Impact-law independence; saturating-impact thresholds | `e001c_saturating.py` |
+| Two-species thresholds and regime map | `e002_tugofwar.py` |
+| Conservation law, three ways | `e002_verify_D2.py` |
+| Compounding-bankroll coexistence | `e003_bankroll.py` |
+| Ensemble averaging under a pure lag | `e001b_averaging.py` |
+| Ensemble averaging under a trailing window | `e001d_audit_kernel.py` |
+| Power of the pooled spectral test | `e005_power.py` |
+| The schematic above | `fig_loop_schematic.py` |
+
+### Empirics
+
+Needs the data described below.
+
+| Paper object | Script | Data |
 |---|---|---|
-| Table 1, rows 1–3 (exponential, pure lag, trailing window) | `e001_decay.py` | thresholds located by bisection on the measured linear growth rate |
-| Table 1, rows 4–7 (window + decision lag) | `e001e_boxlag_thresholds.py` | closed form and numerical root-finding on the unwrapped phase, agreeing to 2e-16 |
-| Figure 2 (`fig:e001`), exponential and pure-lag regimes | `e001_decay.py` | also writes `e001_box_window.png`, not used in the paper |
-| Section 3.4 verification numbers (ringing frequency 2.1815, decay 0.5008, thresholds 1.5787 and 4.959) | `e001_decay.py` | printed to stdout |
-| Section 3.4 saturating-impact thresholds (κ\* = π, 3π/4); Corollary 1 | `e001c_saturating.py` | reproduces Proposition 1's impact-law independence |
-| Figure 3 (`fig:e002`), threshold curves and regime map | `e002_tugofwar.py` | slow: 13 thresholds by bisection, each an integrated DDE |
-| Propositions 4–6, thirteen thresholds to <0.05% | `e002_tugofwar.py` | printed to stdout |
-| Appendix B.2, conservation law residual scaling | `e002_verify_D2.py` | symbolic check plus O(h²) residual scaling |
-| Appendix B.3, bankroll coexistence identities | `e003_bankroll.py` | writes `e003_results.pkl` |
+| Managed-futures kernel and gain, point estimates | `e005b_cta_kernel.py` | managed futures |
+| The same, bootstrap intervals | `e005c_cta_bootstrap.py` | managed futures |
+| Publication-aligned event study | `e004_undershoot.py` | anomaly panel |
+| Placebo-portfolio check | `e004b_placebo.py` | anomaly panel |
+| Calendar-month fixed effects | `e004c_calendar.py` | anomaly panel |
+| Predictors against placebos | `e004d_did.py` | anomaly panel |
+| Cross-sectional regression | `e004e_crowdability.py` | anomaly panel |
+| Publication-vintage split | `e004f_cohort.py` | anomaly panel |
 
-### Aggregation and the anomaly panel (Section 6)
+`cta_data.py` holds the series loading and model specification shared by the two
+managed-futures scripts, so both work from an identical sample and specification.
 
-| Paper object | Script | Notes |
-|---|---|---|
-| Figure 5 top (`fig:e001b`), 400-strategy ensemble under a pure lag | `e001b_averaging.py` | |
-| Figure 5 bottom, same ensemble under a trailing window below threshold | `e001d_audit_kernel.py` | source of the 3.3-point undershoot and the 0.013%/month figure |
-| Figure 6 (`fig:e004`), publication-aligned event study | `e004_undershoot.py` | needs OSAP; 4000-draw cluster and calendar bootstraps, plus a 1000-draw shuffled-publication placebo |
-| Section 6.2 placebo-portfolio results | `e004b_placebo.py` | needs OSAP placebo portfolios |
-| Section 6.2 calendar-month fixed effects | `e004c_calendar.py` | needs OSAP |
-| Figure 7 (`fig:did`), predictors against placebos, difference-in-differences | `e004d_did.py` | needs OSAP |
-| Section 6.2 cross-sectional regression | `e004e_crowdability.py` | needs OSAP; writes `data/e004_crowdability.csv` |
-| Table 4 (`tab:cohort`), year-three gap by publication cohort | `e004f_cohort.py` | needs OSAP; this is the diagnostic that identifies the artifact |
-
-### Measurement and power (Sections 5 and 7)
-
-| Paper object | Script | Notes |
-|---|---|---|
-| Table 3 (`tab:cta`) point estimates, and Figure 4 (`fig:cta`) | `e005b_cta_kernel.py` | Almon kernel, capacity regression, HAC standard errors |
-| Table 3 (`tab:cta`) 90% intervals and tail probabilities | `e005c_cta_bootstrap.py` | circular block bootstrap, blocks of 8 quarters and 3 years, 2000 draws, seed 5; prints a row-by-row comparison against the values in the paper |
-| series loading and model specification shared by the two above | `cta_data.py` | not run directly |
-| Table 5 (`tab:power`), power of the pooled spectral test | `e005_power.py` | slow: 10 cells × 60 replications, each with a parametric bootstrap null |
-
-Figure 1 (`fig:loop`) is drawn in TikZ inside the manuscript and has no script.
-Table 2 (`tab:kernellit`) is a synthesis of published estimates; its sources are the
-citations in the table itself.
-
-### Regenerating every figure as vector PDF
+### Regenerating every figure
 
 ```bash
 python code/_regen_pdf.py e001_decay.py e001b_averaging.py e001d_audit_kernel.py \
     e002_tugofwar.py e004_undershoot.py e004d_did.py e005b_cta_kernel.py
+python code/export_journal_figures.py figures
 ```
 
-This patches `Figure.savefig` so each PNG is written with a PDF sibling, and writes
-into `fig/`.
+The first writes each figure as a PNG with a vector PDF alongside; the second collects
+them in paper order and reports the resolution of each.
 
-## 4. Random seeds and reproducibility
+---
 
-Every stochastic script seeds its generator explicitly (`np.random.default_rng(...)`),
-so bootstrap intervals and simulated ensembles reproduce exactly on the same package
-versions. Threshold-finding is deterministic. `e005c_cta_bootstrap.py` prints its
-recomputed values next to the ones printed in Table 3, so any divergence is visible
-without reading the paper. Reported thresholds carry a small upward
-bias from finite integration time, the signature of critical slowing down near a
-bifurcation; this is discussed in Section 3.4 and is not a numerical error.
+## Data
 
-## 5. Known gaps
+Only freely redistributable data is included. The vendor series are **not** redistributed,
+because their providers do not grant redistribution rights — the usual arrangement for
+vendor data in finance. It costs nothing in reproducibility: every step from the raw files
+onward is in `code/`, and [`data/README.md`](data/README.md) gives the retrieval steps and
+the exact layout each file is expected to have, so you can confirm a newer vintage still
+parses before running anything.
 
-The spectral test of Section 7 has not been run: `e005_power.py` establishes its power,
-but the test itself awaits the factor panels listed in Appendix C. When it is run, the
-code will be added here and released as a new version.
+| Source | Included | Needed by |
+|---|---|---|
+| Open Source Asset Pricing — `SignalDoc` | yes | `e004*` |
+| Open Source Asset Pricing — predictor and placebo portfolios | no, `pip install openassetpricing` | `e004*` |
+| BarclayHedge — CTA assets under management, BTOP50 index | no, barclayhedge.com | `e005b`, `e005c` |
+| AQR Data Library — Time Series Momentum Factors | no, AQR Data Library | `e005b`, `e005c` |
 
-## 6. License
+---
 
-Code is released under the MIT License (see `LICENSE`). Data files retain the licenses
-of their original providers.
+## Reproducibility
+
+Every script that uses randomness seeds its generator explicitly, so bootstrap intervals
+and simulated ensembles reproduce exactly on the same package versions. Threshold-finding
+is deterministic.
+
+Two scripts check themselves against the paper as they run.
+`e001e_boxlag_thresholds.py` derives each threshold in closed form *and* by root-finding on
+the unwrapped phase, with no shared algebra between the two routes, and asserts they agree
+(they do, to 2 × 10⁻¹⁶). `e005c_cta_bootstrap.py` prints its recomputed intervals next to
+the ones published in the paper, row by row, so any divergence is visible without opening
+the paper.
+
+Reported bifurcation thresholds carry a small upward bias from finite integration time.
+That is the signature of critical slowing down near a bifurcation, discussed in the paper,
+not a numerical error.
+
+Python 3.13.3 was used for the published results; any Python ≥ 3.11 should work.
+
+---
+
+## Citing
+
+If you use this code, please cite the software via the archived release (see
+[`CITATION.cff`](CITATION.cff)) and the paper it accompanies. The paper is a working paper
+under review; the citation here will be updated when it appears.
+
+---
+
+## License
+
+Code is released under the [MIT License](LICENSE). Data files retain the licenses of their
+original providers; see [`data/README.md`](data/README.md).

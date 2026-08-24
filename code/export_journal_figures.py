@@ -11,7 +11,7 @@ import sys
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIG = os.path.join(BASE, "fig")
-OUT = os.path.join(BASE, "submission", "figures")
+OUT = os.path.join(BASE, "figures")   # override: pass a path as argv[1]
 
 # document order -> source file (see paper/sections/*.tex)
 ORDER = [
@@ -29,7 +29,8 @@ ORDER = [
 
 
 def main():
-    os.makedirs(OUT, exist_ok=True)
+    out = sys.argv[1] if len(sys.argv) > 1 else OUT
+    os.makedirs(out, exist_ok=True)
     try:
         from PIL import Image
     except ImportError:
@@ -40,7 +41,7 @@ def main():
         if not os.path.exists(src):
             missing.append(stem)
             continue
-        dst = os.path.join(OUT, f"Figure {n}.png")
+        dst = os.path.join(out, f"Figure {n}.png")
         shutil.copyfile(src, dst)
         size = os.path.getsize(dst) / 1024
         if Image is not None:
@@ -51,7 +52,7 @@ def main():
         else:
             rows.append((n, stem, "?", "?", f"{size:.0f} KB", what))
 
-    print(f"wrote {len(rows)} figures to {OUT}\n")
+    print(f"wrote {len(rows)} figures to {out}\n")
     print(f"{'#':>2}  {'source':<24}{'pixels':<12}{'dpi':<6}{'size':<10}what")
     print("-" * 96)
     bad = []
