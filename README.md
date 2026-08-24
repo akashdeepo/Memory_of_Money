@@ -7,11 +7,6 @@ figure in the paper is produced by the scripts in `code/`; nothing is hand-compu
 > cite the DOI in `CITATION.cff` rather than the moving `main` branch.
 
 
-**The Memory of Money: Track-Record Windows and Whether Crowding Cycles**
-
-This repository reproduces every number, table and figure in the paper. All results are
-produced by the scripts in `code/`; nothing in the paper is hand-computed.
-
 ---
 
 ## 1. Environment
@@ -30,32 +25,22 @@ results to plotting precision.
 
 ## 2. Data
 
-Two of the five data sources are redistributable and are included in `data/`. Three are
-not, and must be fetched before the corresponding scripts will run.
+One of the five data sources is freely redistributable and is included in `data/`. The
+rest must be obtained from their providers before the corresponding scripts will run;
+their licences do not permit redistribution here. See `data/README.md` for the exact
+retrieval steps and the expected file layouts.
 
 | Source | Used by | Included? | How to obtain |
 |---|---|---|---|
-| Open Source Asset Pricing, release 2025.10 (`PredictorPortsFull`, `PlaceboPortsFull`, `SignalDoc`) | `e004*` | `SignalDoc.csv` only | see below |
-| BarclayHedge CTA industry and systematic-trader assets under management | `e005b` | yes (`data/cta/`) | public download from barclayhedge.com |
-| BarclayHedge BTOP50 index, monthly | `e005b` | yes (`data/cta/`) | public download from barclayhedge.com |
-| AQR Time Series Momentum Factors, monthly | `e005b` | yes (`data/cta/`) | AQR Data Library, "Time Series Momentum Factors" |
-| Global Factor Data (Jensen–Kelly–Pedersen); Kenneth French library | Section 7 test (not yet run) | no | see paper Appendix C |
+| Open Source Asset Pricing, release 2025.10: `SignalDoc` | `e004*` | yes | included |
+| Open Source Asset Pricing: `PredictorPortsFull`, `PlaceboPortsFull` | `e004*` | no | `pip install openassetpricing`; see `data/README.md` |
+| BarclayHedge CTA industry and systematic-trader assets under management | `e005b`, `e005c` | no | barclayhedge.com |
+| BarclayHedge BTOP50 index, monthly | `e005b`, `e005c` | no | barclayhedge.com |
+| AQR Time Series Momentum Factors, monthly | `e005b`, `e005c` | no | AQR Data Library |
+| Global Factor Data; Kenneth French library | Section 7 test (not yet run) | no | see paper, Appendix C |
 
-The Open Source Asset Pricing portfolio files are large and are redistributed by their
-authors under their own terms, so they are fetched rather than vendored. To obtain them:
-
-```python
-# predictor portfolios (the openassetpricing package wraps the official release)
-pip install openassetpricing
-import openassetpricing as oap
-op = oap.OpenAP(2025.10)
-op.dl_port('PredictorPortsFull', 'pandas').to_parquet('data/PredictorPortsFull.parquet')
-```
-
-The 114 placebo portfolios (`PlaceboPortsFull`) are not exposed by the package and must
-be downloaded from the release's public Google Drive folder, then saved as
-`data/PlaceboPortsFull.parquet`. `SignalDoc.csv`, which carries publication years and
-sample windows, is small and is included in `data/`.
+The theory scripts (`e001*`, `e002*`, `e003*`, `e005_power`, `fig_loop_schematic`) need
+no data at all and reproduce Table 1, Table 5 and Figures 1--5, 7 and 8 out of the box.
 
 ## 3. What produces what
 
@@ -126,7 +111,7 @@ bifurcation; this is discussed in Section 3.4 and is not a numerical error.
 
 The spectral test of Section 7 has not been run: `e005_power.py` establishes its power,
 but the test itself awaits the factor panels listed in Appendix C. When it is run, the
-code will be added here and this section updated.
+code will be added here and released as a new version.
 
 ## 6. License
 
